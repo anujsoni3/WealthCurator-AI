@@ -1,40 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import EmptyState from '../../../components/ui/EmptyState'
 import ErrorState from '../../../components/ui/ErrorState'
 import LoadingState from '../../../components/ui/LoadingState'
+import { useFetch } from '../../../hooks'
 import { getSummaryMetrics } from '../data/summaryMetrics'
 import SummaryCard from './SummaryCard'
 
 function SummaryCardsSection() {
-  const [metrics, setMetrics] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const loadMetrics = async () => {
-    try {
-      const response = await getSummaryMetrics()
-      setMetrics(response)
-    } catch (loadError) {
-      setError(loadError)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    const loadTimer = window.setTimeout(() => {
-      void loadMetrics()
-    }, 0)
-
-    return () => {
-      window.clearTimeout(loadTimer)
-    }
-  }, [])
+  const fetchSummaryMetrics = useCallback(() => getSummaryMetrics(), [])
+  const {
+    data: metrics = [],
+    error,
+    isLoading,
+    refetch,
+  } = useFetch(fetchSummaryMetrics, {
+    initialData: [],
+    immediate: true,
+  })
 
   const handleRetry = () => {
-    setIsLoading(true)
-    setError(null)
-    void loadMetrics()
+    void refetch()
   }
 
   if (isLoading) {
