@@ -1,6 +1,10 @@
 import { useMemo } from 'react'
 import { DASHBOARD_SECTIONS } from '../../lib/constants'
-import { SummaryCardsSection, TransactionsSection } from '../../features'
+import {
+  InsightsSection,
+  SummaryCardsSection,
+  TransactionsSection,
+} from '../../features'
 import EmptyState from '../ui/EmptyState'
 import LoadingState from '../ui/LoadingState'
 
@@ -74,6 +78,8 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
 
           {section.id === 'summary' ? (
             <SummaryCardsSection />
+          ) : section.id === 'insights' ? (
+            <InsightsSection />
           ) : section.id === 'transactions' ? (
             <TransactionsSection />
           ) : (
