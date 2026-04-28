@@ -1,10 +1,61 @@
+import { useMemo } from 'react'
 import { DASHBOARD_SECTIONS } from '../../lib/constants'
 import EmptyState from '../ui/EmptyState'
+import LoadingState from '../ui/LoadingState'
 
-function MainContent() {
+const NAV_TO_SECTION_IDS = {
+  overview: null,
+  transactions: ['transactions'],
+  insights: ['insights'],
+  budgets: [],
+  portfolio: [],
+}
+
+function MainContent({ activeNavId, searchQuery, isSearchPending }) {
+  const visibleSections = useMemo(() => {
+    const scopedSectionIds = NAV_TO_SECTION_IDS[activeNavId] ?? []
+    const normalizedQuery = searchQuery.trim().toLowerCase()
+
+    const navScopedSections =
+      scopedSectionIds === null
+        ? DASHBOARD_SECTIONS
+        : DASHBOARD_SECTIONS.filter((section) => scopedSectionIds.includes(section.id))
+
+    if (!normalizedQuery) {
+      return navScopedSections
+    }
+
+    return navScopedSections.filter((section) => {
+      const haystack = `${section.title} ${section.description}`.toLowerCase()
+      return haystack.includes(normalizedQuery)
+    })
+  }, [activeNavId, searchQuery])
+
+  if (isSearchPending) {
+    return (
+      <main className="w-full">
+        <LoadingState
+          title="Searching dashboard"
+          description="Applying your search query to relevant dashboard sections."
+        />
+      </main>
+    )
+  }
+
+  if (visibleSections.length === 0) {
+    return (
+      <main className="w-full">
+        <EmptyState
+          title="No matching sections"
+          description="Try a different query or switch navigation tabs to broaden results."
+        />
+      </main>
+    )
+  }
+
   return (
     <main className="w-full space-y-6">
-      {DASHBOARD_SECTIONS.map((section) => (
+      {visibleSections.map((section) => (
         <section
           key={section.id}
           aria-labelledby={`${section.id}-heading`}

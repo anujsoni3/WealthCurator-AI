@@ -1,9 +1,9 @@
 export const NAV_ITEMS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'transactions', label: 'Transactions' },
-  { id: 'insights', label: 'AI Insights' },
-  { id: 'budgets', label: 'Budgets' },
-  { id: 'portfolio', label: 'Portfolio' },
+  { id: 'overview', label: 'Overview', sectionId: null },
+  { id: 'transactions', label: 'Transactions', sectionId: 'transactions' },
+  { id: 'insights', label: 'AI Insights', sectionId: 'insights' },
+  { id: 'budgets', label: 'Budgets', sectionId: 'budgets' },
+  { id: 'portfolio', label: 'Portfolio', sectionId: 'portfolio' },
 ]
 
 export const DASHBOARD_SECTIONS = [
