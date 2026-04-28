@@ -23,6 +23,7 @@ function InsightCard({ insightId, title, message, priority, onExecuteStrategy })
       <button
         type="button"
         onClick={() => onExecuteStrategy(insightId)}
+        aria-label={`Execute strategy for ${title}`}
         className="mt-4 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-primary-700"
       >
         Execute Strategy

@@ -10,7 +10,11 @@ import {
 
 function CashflowBarChart({ data }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div
+      role="img"
+      aria-label="Bar chart showing income versus expenses"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
       <h3 className="text-sm font-semibold text-slate-900">Cashflow Snapshot</h3>
       <p className="mt-1 text-xs text-slate-500">Income versus expenses</p>
 

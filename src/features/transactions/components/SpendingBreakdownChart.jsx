@@ -10,7 +10,11 @@ const CHART_COLORS = ['#2563eb', '#14b8a6', '#f59e0b', '#8b5cf6', '#ef4444']
 
 function SpendingBreakdownChart({ data }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div
+      role="img"
+      aria-label="Pie chart showing spending distribution by category"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
       <h3 className="text-sm font-semibold text-slate-900">Spending Breakdown</h3>
       <p className="mt-1 text-xs text-slate-500">
         Expense distribution across categories

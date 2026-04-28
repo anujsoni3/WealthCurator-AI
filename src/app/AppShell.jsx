@@ -3,6 +3,7 @@ import Header from '../components/layout/Header'
 import MainContent from '../components/layout/MainContent'
 import Sidebar from '../components/layout/Sidebar'
 import { useAnalytics, useDebounce, useLocalStorage } from '../hooks'
+import { NAV_ITEMS } from '../lib/constants'
 
 function AppShell() {
   const [activeNavId, setActiveNavId] = useLocalStorage(
@@ -27,6 +28,12 @@ function AppShell() {
   }, [trackPageView])
 
   useEffect(() => {
+    const activeNavLabel =
+      NAV_ITEMS.find((item) => item.id === activeNavId)?.label || 'Overview'
+    document.title = `WealthCurator AI | ${activeNavLabel}`
+  }, [activeNavId])
+
+  useEffect(() => {
     if (!debouncedSearchQuery) {
       return
     }
@@ -45,6 +52,12 @@ function AppShell() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <a
+        href="#main-content"
+        className="skip-link absolute left-4 top-4 z-50 -translate-y-16 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <Header
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}

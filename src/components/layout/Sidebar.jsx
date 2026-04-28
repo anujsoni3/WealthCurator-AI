@@ -15,6 +15,7 @@ function Sidebar({ activeNavId, onNavChange }) {
                 type="button"
                 onClick={() => onNavChange(item.id)}
                 aria-current={activeNavId === item.id ? 'page' : undefined}
+                aria-label={`Navigate to ${item.label}`}
                 className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
                   activeNavId === item.id
                     ? 'bg-primary-50 text-primary-700'

@@ -43,7 +43,7 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
 
   if (isSearchPending) {
     return (
-      <main className="w-full">
+      <main id="main-content" tabIndex={-1} className="w-full" aria-busy="true">
         <LoadingState
           title="Searching dashboard"
           description="Applying your search query to relevant dashboard sections."
@@ -54,7 +54,7 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
 
   if (visibleSections.length === 0) {
     return (
-      <main className="w-full">
+      <main id="main-content" tabIndex={-1} className="w-full">
         <EmptyState
           title="No matching sections"
           description="Try a different query or switch navigation tabs to broaden results."
@@ -64,7 +64,7 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
   }
 
   return (
-    <main className="w-full space-y-6">
+    <main id="main-content" tabIndex={-1} className="w-full space-y-6">
       {visibleSections.map((section) => (
         <section
           key={section.id}

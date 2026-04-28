@@ -23,21 +23,39 @@ function TransactionsTable({ rows }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="min-w-full divide-y divide-slate-200">
+        <caption className="sr-only">
+          Recent transactions with date, category, account, and amount
+        </caption>
         <thead className="bg-slate-50">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Date
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Description
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Category
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th
+              scope="col"
+              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Account
             </th>
-            <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <th
+              scope="col"
+              className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500"
+            >
               Amount
             </th>
           </tr>

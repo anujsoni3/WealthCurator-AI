@@ -25,9 +25,16 @@ function Header({ searchQuery, onSearchChange, isSearchPending, subtitle }) {
               value={searchQuery}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search sections, insights, or transactions"
+              autoComplete="off"
+              enterKeyHint="search"
+              aria-describedby="dashboard-search-status"
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 pr-20 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
             />
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+            <span
+              id="dashboard-search-status"
+              aria-live="polite"
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400"
+            >
               {isSearchPending ? 'Typing...' : 'Ready'}
             </span>
           </div>
@@ -36,11 +43,16 @@ function Header({ searchQuery, onSearchChange, isSearchPending, subtitle }) {
         <div className="flex items-center gap-3 self-end lg:self-auto">
           <button
             type="button"
+            aria-label="Open notifications"
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-primary-300 hover:text-primary-700"
           >
             Notifications
           </button>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+          <div
+            role="img"
+            aria-label="User profile avatar"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
+          >
             AS
           </div>
         </div>
