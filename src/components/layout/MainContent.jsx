@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { DASHBOARD_SECTIONS } from '../../lib/constants'
+import { SummaryCardsSection } from '../../features'
 import EmptyState from '../ui/EmptyState'
 import LoadingState from '../ui/LoadingState'
 
@@ -71,10 +72,14 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
             <p className="mt-1 text-sm text-slate-500">{section.description}</p>
           </div>
 
-          <EmptyState
-            title={`${section.title} content pending`}
-            description="This section is intentionally scaffolded in Phase 1 and will be implemented in upcoming phases."
-          />
+          {section.id === 'summary' ? (
+            <SummaryCardsSection />
+          ) : (
+            <EmptyState
+              title={`${section.title} content pending`}
+              description="This section is intentionally scaffolded and will be implemented in upcoming phases."
+            />
+          )}
         </section>
       ))}
     </main>
