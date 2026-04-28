@@ -3,7 +3,13 @@ import EmptyState from '../../../components/ui/EmptyState'
 import ErrorState from '../../../components/ui/ErrorState'
 import LoadingState from '../../../components/ui/LoadingState'
 import { useFetch } from '../../../hooks'
+import {
+  buildCashflowData,
+  buildCategorySpendData,
+} from '../charts/chartData'
 import { getTransactions } from '../data/transactions'
+import CashflowBarChart from './CashflowBarChart'
+import SpendingBreakdownChart from './SpendingBreakdownChart'
 import TransactionsTable from './TransactionsTable'
 
 function TransactionsSection() {
@@ -27,6 +33,12 @@ function TransactionsSection() {
 
     return transactions.filter((transaction) => transaction.direction === typeFilter)
   }, [transactions, typeFilter])
+
+  const categorySpendData = useMemo(
+    () => buildCategorySpendData(transactions),
+    [transactions]
+  )
+  const cashflowData = useMemo(() => buildCashflowData(transactions), [transactions])
 
   if (isLoading) {
     return (
@@ -58,6 +70,18 @@ function TransactionsSection() {
 
   return (
     <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <CashflowBarChart data={cashflowData} />
+        {categorySpendData.length > 0 ? (
+          <SpendingBreakdownChart data={categorySpendData} />
+        ) : (
+          <EmptyState
+            title="No expense data for chart"
+            description="Add expense transactions to view category distribution."
+          />
+        )}
+      </div>
+
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">
           Showing {filteredTransactions.length} of {transactions.length} transactions
