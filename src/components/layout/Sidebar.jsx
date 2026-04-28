@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { NAV_ITEMS } from '../../lib/constants'
 
 function Sidebar({ activeNavId, onNavChange }) {
@@ -30,4 +31,4 @@ function Sidebar({ activeNavId, onNavChange }) {
   )
 }
 
-export default Sidebar
+export default memo(Sidebar)

@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 function Header({ searchQuery, onSearchChange, isSearchPending, subtitle }) {
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -47,4 +49,4 @@ function Header({ searchQuery, onSearchChange, isSearchPending, subtitle }) {
   )
 }
 
-export default Header
+export default memo(Header)

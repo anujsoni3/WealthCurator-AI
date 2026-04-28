@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import EmptyState from '../../../components/ui/EmptyState'
 import ErrorState from '../../../components/ui/ErrorState'
 import LoadingState from '../../../components/ui/LoadingState'
-import { useFetch } from '../../../hooks'
+import { useAnalytics, useFetch } from '../../../hooks'
 import { getSummaryMetrics } from '../../summary/data/summaryMetrics'
 import { getTransactions } from '../../transactions/data/transactions'
 import { generateInsights } from '../engine/generateInsights'
@@ -18,7 +18,14 @@ async function loadInsightsData() {
 }
 
 function InsightsSection() {
+  const { trackEvent } = useAnalytics()
   const fetchInsights = useCallback(() => loadInsightsData(), [])
+  const handleExecuteStrategy = useCallback(
+    (insightId) => {
+      trackEvent('execute_strategy_click', { insight_id: insightId })
+    },
+    [trackEvent]
+  )
   const {
     data: insights = [],
     error,
@@ -60,7 +67,12 @@ function InsightsSection() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {insights.map((insight) => (
-        <InsightCard key={insight.id} {...insight} />
+        <InsightCard
+          key={insight.id}
+          insightId={insight.id}
+          {...insight}
+          onExecuteStrategy={handleExecuteStrategy}
+        />
       ))}
     </div>
   )

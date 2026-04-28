@@ -1,19 +1,25 @@
-import { useCallback, useMemo, useState } from 'react'
+import { Suspense, lazy, useCallback, useMemo, useState } from 'react'
 import EmptyState from '../../../components/ui/EmptyState'
 import ErrorState from '../../../components/ui/ErrorState'
 import LoadingState from '../../../components/ui/LoadingState'
-import { useFetch } from '../../../hooks'
+import { useAnalytics, useFetch } from '../../../hooks'
 import {
   buildCashflowData,
   buildCategorySpendData,
 } from '../charts/chartData'
 import { getTransactions } from '../data/transactions'
-import CashflowBarChart from './CashflowBarChart'
-import SpendingBreakdownChart from './SpendingBreakdownChart'
 import TransactionsTable from './TransactionsTable'
+
+const CashflowBarChart = lazy(() => import('./CashflowBarChart'))
+const SpendingBreakdownChart = lazy(() => import('./SpendingBreakdownChart'))
 
 function TransactionsSection() {
   const [typeFilter, setTypeFilter] = useState('all')
+  const { trackEvent } = useAnalytics()
+  const handleFilterChange = useCallback((nextFilter) => {
+    setTypeFilter(nextFilter)
+    trackEvent('transactions_filter_click', { filter_type: nextFilter })
+  }, [trackEvent])
 
   const fetchTransactions = useCallback(() => getTransactions(), [])
   const {
@@ -70,17 +76,26 @@ function TransactionsSection() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-2">
-        <CashflowBarChart data={cashflowData} />
-        {categorySpendData.length > 0 ? (
-          <SpendingBreakdownChart data={categorySpendData} />
-        ) : (
-          <EmptyState
-            title="No expense data for chart"
-            description="Add expense transactions to view category distribution."
+      <Suspense
+        fallback={
+          <LoadingState
+            title="Loading charts"
+            description="Optimizing and rendering transaction visualizations."
           />
-        )}
-      </div>
+        }
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <CashflowBarChart data={cashflowData} />
+          {categorySpendData.length > 0 ? (
+            <SpendingBreakdownChart data={categorySpendData} />
+          ) : (
+            <EmptyState
+              title="No expense data for chart"
+              description="Add expense transactions to view category distribution."
+            />
+          )}
+        </div>
+      </Suspense>
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">
@@ -90,7 +105,7 @@ function TransactionsSection() {
           <span className="font-medium">Type</span>
           <select
             value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
+            onChange={(event) => handleFilterChange(event.target.value)}
             className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
           >
             <option value="all">All</option>

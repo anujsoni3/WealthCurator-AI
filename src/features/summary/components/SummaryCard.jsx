@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -31,4 +33,4 @@ function SummaryCard({ title, value, delta, trend, helperText }) {
   )
 }
 
-export default SummaryCard
+export default memo(SummaryCard)

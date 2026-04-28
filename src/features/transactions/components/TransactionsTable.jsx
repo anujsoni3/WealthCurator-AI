@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 function formatAmount(amount, direction) {
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -75,4 +77,4 @@ function TransactionsTable({ rows }) {
   )
 }
 
-export default TransactionsTable
+export default memo(TransactionsTable)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Header from '../components/layout/Header'
 import MainContent from '../components/layout/MainContent'
 import Sidebar from '../components/layout/Sidebar'
@@ -34,16 +34,20 @@ function AppShell() {
     trackEvent('dashboard_search_used', { query: debouncedSearchQuery })
   }, [debouncedSearchQuery, trackEvent])
 
-  const handleNavChange = (nextNavId) => {
+  const handleNavChange = useCallback((nextNavId) => {
     setActiveNavId(nextNavId)
     trackEvent('dashboard_navigation_click', { nav_id: nextNavId })
-  }
+  }, [setActiveNavId, trackEvent])
+
+  const handleSearchChange = useCallback((nextQuery) => {
+    setSearchQuery(nextQuery)
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Header
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         isSearchPending={isSearchPending}
         subtitle={headerSubtitle}
       />

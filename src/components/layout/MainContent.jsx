@@ -1,12 +1,17 @@
-import { useMemo } from 'react'
+import { Suspense, lazy, useMemo } from 'react'
 import { DASHBOARD_SECTIONS } from '../../lib/constants'
-import {
-  InsightsSection,
-  SummaryCardsSection,
-  TransactionsSection,
-} from '../../features'
 import EmptyState from '../ui/EmptyState'
 import LoadingState from '../ui/LoadingState'
+
+const SummaryCardsSection = lazy(() =>
+  import('../../features/summary/components/SummaryCardsSection')
+)
+const InsightsSection = lazy(() =>
+  import('../../features/insights/components/InsightsSection')
+)
+const TransactionsSection = lazy(() =>
+  import('../../features/transactions/components/TransactionsSection')
+)
 
 const NAV_TO_SECTION_IDS = {
   overview: null,
@@ -76,18 +81,27 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
             <p className="mt-1 text-sm text-slate-500">{section.description}</p>
           </div>
 
-          {section.id === 'summary' ? (
-            <SummaryCardsSection />
-          ) : section.id === 'insights' ? (
-            <InsightsSection />
-          ) : section.id === 'transactions' ? (
-            <TransactionsSection />
-          ) : (
-            <EmptyState
-              title={`${section.title} content pending`}
-              description="This section is intentionally scaffolded and will be implemented in upcoming phases."
-            />
-          )}
+          <Suspense
+            fallback={
+              <LoadingState
+                title={`Loading ${section.title}`}
+                description="Preparing section components for display."
+              />
+            }
+          >
+            {section.id === 'summary' ? (
+              <SummaryCardsSection />
+            ) : section.id === 'insights' ? (
+              <InsightsSection />
+            ) : section.id === 'transactions' ? (
+              <TransactionsSection />
+            ) : (
+              <EmptyState
+                title={`${section.title} content pending`}
+                description="This section is intentionally scaffolded and will be implemented in upcoming phases."
+              />
+            )}
+          </Suspense>
         </section>
       ))}
     </main>
