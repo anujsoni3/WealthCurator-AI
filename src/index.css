@@ -18,6 +18,13 @@
     @apply min-h-screen;
   }
 
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-sans tracking-normal;
+  }
+
   *:focus-visible {
     @apply outline-none ring-2 ring-primary-500 ring-offset-2;
   }

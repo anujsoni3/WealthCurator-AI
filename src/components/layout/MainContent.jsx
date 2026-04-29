@@ -15,6 +15,9 @@ const TransactionsSection = lazy(() =>
 const BudgetIntelligenceSection = lazy(() =>
   import('../../features/budgets/components/BudgetIntelligenceSection')
 )
+const BudgetOverviewSection = lazy(() =>
+  import('../../features/budgets/components/BudgetOverviewSection')
+)
 const DesignSystemShowcase = lazy(() =>
   import('../../features/design-system/components/DesignSystemShowcase')
 )
@@ -23,9 +26,15 @@ const PortfolioOverview = lazy(() =>
 )
 
 function MainContent({ activeNavId, searchQuery, isSearchPending }) {
+  const normalizedSearchQuery = (searchQuery || '').trim()
+  const isOverviewDefaultView = activeNavId === 'overview' && !normalizedSearchQuery
+  const isPortfolioDefaultView = activeNavId === 'portfolio' && !normalizedSearchQuery
+  const isInsightsDefaultView = activeNavId === 'insights' && !normalizedSearchQuery
+  const isTransactionsDefaultView = activeNavId === 'transactions' && !normalizedSearchQuery
+  const isBudgetsDefaultView = activeNavId === 'budgets' && !normalizedSearchQuery
   const visibleSections = useMemo(
-    () => getFilteredSections(activeNavId, searchQuery),
-    [activeNavId, searchQuery]
+    () => getFilteredSections(activeNavId, normalizedSearchQuery),
+    [activeNavId, normalizedSearchQuery]
   )
 
   if (isSearchPending) {
@@ -35,6 +44,91 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
           title="Searching dashboard"
           description="Applying your search query to relevant dashboard sections."
         />
+      </main>
+    )
+  }
+
+  if (isOverviewDefaultView) {
+    return (
+      <main id="main-content" tabIndex={-1} className="w-full space-y-4">
+        <Suspense
+          fallback={
+            <LoadingState
+              title="Loading portfolio overview"
+              description="Preparing your strategy-focused dashboard."
+            />
+          }
+        >
+          <PortfolioOverview />
+        </Suspense>
+      </main>
+    )
+  }
+
+  if (isPortfolioDefaultView) {
+    return (
+      <main id="main-content" tabIndex={-1} className="w-full space-y-4">
+        <Suspense
+          fallback={
+            <LoadingState
+              title="Loading design system"
+              description="Preparing typography, tokens, and component showcase."
+            />
+          }
+        >
+          <DesignSystemShowcase />
+        </Suspense>
+      </main>
+    )
+  }
+
+  if (isInsightsDefaultView) {
+    return (
+      <main id="main-content" tabIndex={-1} className="w-full space-y-4">
+        <Suspense
+          fallback={
+            <LoadingState
+              title="Loading insights workspace"
+              description="Preparing your personalized intelligence view."
+            />
+          }
+        >
+          <InsightsSection />
+        </Suspense>
+      </main>
+    )
+  }
+
+  if (isTransactionsDefaultView) {
+    return (
+      <main id="main-content" tabIndex={-1} className="w-full space-y-4">
+        <Suspense
+          fallback={
+            <LoadingState
+              title="Loading transactions workspace"
+              description="Preparing your monthly overview and category allocations."
+            />
+          }
+        >
+          <BudgetIntelligenceSection />
+        </Suspense>
+      </main>
+    )
+  }
+
+  if (isBudgetsDefaultView) {
+    return (
+      <main id="main-content" tabIndex={-1} className="w-full space-y-4">
+        <Suspense
+          fallback={
+            <LoadingState
+              title="Loading budget workspace"
+              description="Preparing your spending categories and budget history."
+            />
+          }
+        >
+          <BudgetOverviewSection />
+        </Suspense>
       </main>
     )
   }
@@ -52,70 +146,53 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="w-full space-y-4">
-      {activeNavId === 'overview' && !searchQuery && (
-        <section className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      {visibleSections.map((section) => (
+        <section
+          key={section.id}
+          aria-labelledby={`${section.id}-heading`}
+          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
+        >
+          <div className="mb-4 border-b border-slate-100 pb-4 dark:border-slate-800">
+            <h2
+              id={`${section.id}-heading`}
+              className="text-lg font-semibold text-slate-900 dark:text-slate-100"
+            >
+              {section.title}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {section.description}
+            </p>
+          </div>
+
           <Suspense
             fallback={
               <LoadingState
-                title="Loading portfolio overview"
-                description="Preparing your strategy-focused dashboard."
+                title={`Loading ${section.title}`}
+                description="Preparing section components for display."
               />
             }
           >
-            <PortfolioOverview />
+            {section.id === 'summary' ? (
+              <SummaryCardsSection />
+            ) : section.id === 'designSystem' ? (
+              <DesignSystemShowcase />
+            ) : section.id === 'portfolio' ? (
+              <PortfolioOverview />
+            ) : section.id === 'budgets' ? (
+              <BudgetIntelligenceSection />
+            ) : section.id === 'insights' ? (
+              <InsightsSection />
+            ) : section.id === 'transactions' ? (
+              <TransactionsSection />
+            ) : (
+              <EmptyState
+                title={`${section.title} unavailable`}
+                description="This section could not be rendered right now. Please try again."
+              />
+            )}
           </Suspense>
         </section>
-      )}
-
-      {activeNavId === 'overview' && !searchQuery
-        ? null
-        : visibleSections.map((section) => (
-            <section
-              key={section.id}
-              aria-labelledby={`${section.id}-heading`}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
-            >
-              <div className="mb-4 border-b border-slate-100 pb-4 dark:border-slate-800">
-                <h2
-                  id={`${section.id}-heading`}
-                  className="text-lg font-semibold text-slate-900 dark:text-slate-100"
-                >
-                  {section.title}
-                </h2>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  {section.description}
-                </p>
-              </div>
-
-              <Suspense
-                fallback={
-                  <LoadingState
-                    title={`Loading ${section.title}`}
-                    description="Preparing section components for display."
-                  />
-                }
-              >
-                {section.id === 'summary' ? (
-                  <SummaryCardsSection />
-                ) : section.id === 'designSystem' ? (
-                  <DesignSystemShowcase />
-                ) : section.id === 'portfolio' ? (
-                  <PortfolioOverview />
-                ) : section.id === 'budgets' ? (
-                  <BudgetIntelligenceSection />
-                ) : section.id === 'insights' ? (
-                  <InsightsSection />
-                ) : section.id === 'transactions' ? (
-                  <TransactionsSection />
-                ) : (
-                  <EmptyState
-                    title={`${section.title} unavailable`}
-                    description="This section could not be rendered right now. Please try again."
-                  />
-                )}
-              </Suspense>
-            </section>
-          ))}
+      ))}
     </main>
   )
 }

@@ -4,7 +4,6 @@ import MainContent from '../components/layout/MainContent'
 import Sidebar from '../components/layout/Sidebar'
 import { useAnalytics, useDebounce, useLocalStorage } from '../hooks'
 import { ALERT_ITEMS, NAV_ITEMS } from '../lib/constants'
-import { getFilteredSections } from '../lib/search/dashboardSections'
 
 function AppShell() {
   const [activeNavId, setActiveNavId] = useLocalStorage(
@@ -18,41 +17,37 @@ function AppShell() {
   const debouncedSearchQuery = useDebounce(searchQuery, 350)
   const isSearchPending = searchQuery !== debouncedSearchQuery
   const { trackEvent, trackPageView } = useAnalytics()
-
-  const headerSubtitle = useMemo(() => {
-    if (!debouncedSearchQuery) {
-      return 'Track your personal finance activity in one place.'
-    }
-
-    return `Results for "${debouncedSearchQuery}"`
-  }, [debouncedSearchQuery])
+  const validNavIds = useMemo(() => NAV_ITEMS.map((item) => item.id), [])
+  const resolvedActiveNavId = validNavIds.includes(activeNavId) ? activeNavId : 'overview'
 
   const activeHeaderTab = useMemo(() => {
-    if (activeNavId === 'insights') {
-      return 'analysis'
+    if (resolvedActiveNavId === 'insights') {
+      return 'insightsTab'
     }
-    if (activeNavId === 'transactions') {
-      return 'market'
+    if (resolvedActiveNavId === 'transactions') {
+      return 'insightsTab'
+    }
+    if (resolvedActiveNavId === 'portfolio') {
+      return 'portfolio'
     }
     return 'portfolio'
-  }, [activeNavId])
-
-  const searchMatchCount = useMemo(() => {
-    if (!debouncedSearchQuery) {
-      return 0
-    }
-    return getFilteredSections(activeNavId, debouncedSearchQuery).length
-  }, [activeNavId, debouncedSearchQuery])
+  }, [resolvedActiveNavId])
 
   useEffect(() => {
     trackPageView('dashboard')
   }, [trackPageView])
 
   useEffect(() => {
+    if (resolvedActiveNavId !== activeNavId) {
+      setActiveNavId('overview')
+    }
+  }, [activeNavId, resolvedActiveNavId, setActiveNavId])
+
+  useEffect(() => {
     const activeNavLabel =
-      NAV_ITEMS.find((item) => item.id === activeNavId)?.label || 'Overview'
+      NAV_ITEMS.find((item) => item.id === resolvedActiveNavId)?.label || 'Overview'
     document.title = `WealthCurator AI | ${activeNavLabel}`
-  }, [activeNavId])
+  }, [resolvedActiveNavId])
 
   useEffect(() => {
     if (!debouncedSearchQuery) {
@@ -79,6 +74,10 @@ function AppShell() {
         portfolio: 'overview',
         analysis: 'insights',
         market: 'transactions',
+        overviewTab: 'overview',
+        portfolioTab: 'portfolio',
+        insightsTab: 'insights',
+        planningTab: 'budgets',
       }
       const nextNavId = tabToNav[tabId] || 'overview'
       setActiveNavId(nextNavId)
@@ -173,19 +172,18 @@ function AppShell() {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         isSearchPending={isSearchPending}
-        subtitle={headerSubtitle}
-        searchMatchCount={searchMatchCount}
         theme={theme}
         onThemeToggle={handleThemeToggle}
+        activeNavId={resolvedActiveNavId}
         activeTab={activeHeaderTab}
         onTabChange={handleHeaderTabChange}
         onAlertsOpen={handleAlertsOpen}
         onBrandClick={handleBrandClick}
       />
       <div className="mx-auto flex w-full max-w-[1260px] gap-3 px-3 pb-4 pt-3 sm:px-4 lg:px-5">
-        <Sidebar activeNavId={activeNavId} onNavChange={handleNavChange} />
+        <Sidebar activeNavId={resolvedActiveNavId} onNavChange={handleNavChange} />
         <MainContent
-          activeNavId={activeNavId}
+          activeNavId={resolvedActiveNavId}
           searchQuery={debouncedSearchQuery}
           isSearchPending={isSearchPending}
         />
