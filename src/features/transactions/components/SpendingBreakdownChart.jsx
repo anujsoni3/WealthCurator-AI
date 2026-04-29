@@ -13,10 +13,12 @@ function SpendingBreakdownChart({ data }) {
     <div
       role="img"
       aria-label="Pie chart showing spending distribution by category"
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
-      <h3 className="text-sm font-semibold text-slate-900">Spending Breakdown</h3>
-      <p className="mt-1 text-xs text-slate-500">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+        Spending Breakdown
+      </h3>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
         Expense distribution across categories
       </p>
 

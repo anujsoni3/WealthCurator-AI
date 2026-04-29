@@ -16,9 +16,9 @@ function SummaryCard({ title, value, delta, trend, helperText }) {
   const deltaLabel = `${isPositive ? '+' : '-'}${Math.abs(delta)}%`
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-sm font-medium text-slate-500">{title}</p>
-      <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+      <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {formatCurrency(value)}
       </p>
       <div className="mt-3 flex items-center gap-2">
@@ -27,7 +27,7 @@ function SummaryCard({ title, value, delta, trend, helperText }) {
         >
           {deltaLabel}
         </span>
-        <p className="text-xs text-slate-500">{helperText}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
       </div>
     </article>
   )

@@ -98,15 +98,15 @@ function TransactionsSection() {
       </Suspense>
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Showing {filteredTransactions.length} of {transactions.length} transactions
         </p>
-        <label className="flex items-center gap-2 text-sm text-slate-600">
+        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
           <span className="font-medium">Type</span>
           <select
             value={typeFilter}
             onChange={(event) => handleFilterChange(event.target.value)}
-            className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="all">All</option>
             <option value="credit">Income</option>

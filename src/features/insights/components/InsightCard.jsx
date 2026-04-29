@@ -10,16 +10,16 @@ function InsightCard({ insightId, title, message, priority, onExecuteStrategy })
   const priorityStyle = PRIORITY_STYLES[priority] || PRIORITY_STYLES.low
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
         <span
           className={`rounded-full px-2 py-1 text-xs font-semibold capitalize ${priorityStyle}`}
         >
           {priority}
         </span>
       </div>
-      <p className="text-sm leading-6 text-slate-600">{message}</p>
+      <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">{message}</p>
       <button
         type="button"
         onClick={() => onExecuteStrategy(insightId)}

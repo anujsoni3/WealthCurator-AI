@@ -13,10 +13,14 @@ function CashflowBarChart({ data }) {
     <div
       role="img"
       aria-label="Bar chart showing income versus expenses"
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
     >
-      <h3 className="text-sm font-semibold text-slate-900">Cashflow Snapshot</h3>
-      <p className="mt-1 text-xs text-slate-500">Income versus expenses</p>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+        Cashflow Snapshot
+      </h3>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        Income versus expenses
+      </p>
 
       <div className="mt-4 h-64">
         <ResponsiveContainer width="100%" height="100%">
