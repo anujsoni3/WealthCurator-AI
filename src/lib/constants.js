@@ -1,5 +1,6 @@
 export const NAV_ITEMS = [
   { id: 'overview', label: 'Dashboard', sectionId: null },
+  { id: 'analytics', label: 'Analytics', sectionId: 'designSystem' },
   { id: 'portfolio', label: 'Accounts', sectionId: 'portfolio' },
   { id: 'transactions', label: 'Transactions', sectionId: 'transactions' },
   { id: 'budgets', label: 'Budgets', sectionId: 'budgets' },
@@ -7,6 +8,20 @@ export const NAV_ITEMS = [
 ]
 
 export const DASHBOARD_SECTIONS = [
+  {
+    id: 'designSystem',
+    title: 'Proton Finance Design System',
+    description: 'Typography, color tokens, controls, and premium fintech UI primitives.',
+    keywords: [
+      'design system',
+      'analytics',
+      'ui kit',
+      'typography',
+      'color tokens',
+      'controls',
+      'proton',
+    ],
+  },
   {
     id: 'portfolio',
     title: 'Portfolio Overview',

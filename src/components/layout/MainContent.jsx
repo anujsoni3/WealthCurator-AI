@@ -15,6 +15,9 @@ const TransactionsSection = lazy(() =>
 const BudgetIntelligenceSection = lazy(() =>
   import('../../features/budgets/components/BudgetIntelligenceSection')
 )
+const DesignSystemShowcase = lazy(() =>
+  import('../../features/design-system/components/DesignSystemShowcase')
+)
 const PortfolioOverview = lazy(() =>
   import('../../features/portfolio/components/PortfolioOverview')
 )
@@ -94,6 +97,8 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
               >
                 {section.id === 'summary' ? (
                   <SummaryCardsSection />
+                ) : section.id === 'designSystem' ? (
+                  <DesignSystemShowcase />
                 ) : section.id === 'portfolio' ? (
                   <PortfolioOverview />
                 ) : section.id === 'budgets' ? (

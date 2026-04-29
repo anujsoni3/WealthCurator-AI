@@ -2,6 +2,7 @@ import { DASHBOARD_SECTIONS } from '../constants'
 
 export const NAV_TO_SECTION_IDS = {
   overview: null,
+  analytics: ['designSystem'],
   transactions: ['transactions'],
   insights: ['insights'],
   budgets: ['budgets'],
