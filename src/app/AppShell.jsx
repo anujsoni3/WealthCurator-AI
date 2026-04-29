@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Header from '../components/layout/Header'
 import MainContent from '../components/layout/MainContent'
 import Sidebar from '../components/layout/Sidebar'
 import { useAnalytics, useDebounce, useLocalStorage } from '../hooks'
-import { NAV_ITEMS } from '../lib/constants'
+import { ALERT_ITEMS, NAV_ITEMS } from '../lib/constants'
+import { getFilteredSections } from '../lib/search/dashboardSections'
 
 function AppShell() {
   const [activeNavId, setActiveNavId] = useLocalStorage(
@@ -12,6 +13,8 @@ function AppShell() {
   )
   const [searchQuery, setSearchQuery] = useState('')
   const [theme, setTheme] = useLocalStorage('wealthcurator.theme', 'dark')
+  const [isAlertsOpen, setIsAlertsOpen] = useState(false)
+  const alertsPanelRef = useRef(null)
   const debouncedSearchQuery = useDebounce(searchQuery, 350)
   const isSearchPending = searchQuery !== debouncedSearchQuery
   const { trackEvent, trackPageView } = useAnalytics()
@@ -34,6 +37,13 @@ function AppShell() {
     return 'portfolio'
   }, [activeNavId])
 
+  const searchMatchCount = useMemo(() => {
+    if (!debouncedSearchQuery) {
+      return 0
+    }
+    return getFilteredSections(activeNavId, debouncedSearchQuery).length
+  }, [activeNavId, debouncedSearchQuery])
+
   useEffect(() => {
     trackPageView('dashboard')
   }, [trackPageView])
@@ -54,6 +64,8 @@ function AppShell() {
 
   const handleNavChange = useCallback((nextNavId) => {
     setActiveNavId(nextNavId)
+    setSearchQuery('')
+    setIsAlertsOpen(false)
     trackEvent('dashboard_navigation_click', { nav_id: nextNavId })
   }, [setActiveNavId, trackEvent])
 
@@ -71,20 +83,25 @@ function AppShell() {
       const nextNavId = tabToNav[tabId] || 'overview'
       setActiveNavId(nextNavId)
       setSearchQuery('')
+      setIsAlertsOpen(false)
       trackEvent('top_nav_click', { tab_id: tabId })
     },
     [setActiveNavId, trackEvent]
   )
 
   const handleAlertsOpen = useCallback(() => {
-    setActiveNavId('overview')
-    setSearchQuery('')
+    setIsAlertsOpen(true)
     trackEvent('alerts_click', { source: 'header' })
-  }, [setActiveNavId, trackEvent])
+  }, [trackEvent])
+
+  const handleAlertsClose = useCallback(() => {
+    setIsAlertsOpen(false)
+  }, [])
 
   const handleBrandClick = useCallback(() => {
     setActiveNavId('overview')
     setSearchQuery('')
+    setIsAlertsOpen(false)
   }, [setActiveNavId])
 
   const handleThemeToggle = useCallback(() => {
@@ -95,6 +112,54 @@ function AppShell() {
     const root = document.documentElement
     root.classList.toggle('dark', theme === 'dark')
   }, [theme])
+
+  useEffect(() => {
+    if (!isAlertsOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const panelNode = alertsPanelRef.current
+    const focusableElements = panelNode
+      ? Array.from(
+          panelNode.querySelectorAll(
+            'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'
+          )
+        )
+      : []
+    const firstFocusable = focusableElements[0] || panelNode
+    firstFocusable?.focus()
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsAlertsOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab' || focusableElements.length === 0) {
+        return
+      }
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isAlertsOpen])
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-[#060b18] dark:text-slate-100">
@@ -109,6 +174,7 @@ function AppShell() {
         onSearchChange={handleSearchChange}
         isSearchPending={isSearchPending}
         subtitle={headerSubtitle}
+        searchMatchCount={searchMatchCount}
         theme={theme}
         onThemeToggle={handleThemeToggle}
         activeTab={activeHeaderTab}
@@ -124,6 +190,71 @@ function AppShell() {
           isSearchPending={isSearchPending}
         />
       </div>
+
+      {isAlertsOpen && (
+        <div className="fixed inset-0 z-40">
+          <button
+            type="button"
+            aria-label="Close alerts panel"
+            onClick={handleAlertsClose}
+            className="absolute inset-0 bg-slate-900/45"
+          />
+
+          <aside
+            ref={alertsPanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Active alerts panel"
+            tabIndex={-1}
+            className="absolute right-0 top-0 h-full w-full max-w-md border-l border-slate-200 bg-white p-4 shadow-2xl transition-transform duration-200 dark:border-slate-800 dark:bg-[#0b1326]"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Active Alerts
+              </h2>
+              <button
+                type="button"
+                onClick={handleAlertsClose}
+                className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:text-slate-300"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {ALERT_ITEMS.map((alert) => (
+                <article
+                  key={alert.id}
+                  className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                      {alert.title}
+                    </p>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                        alert.severity === 'high'
+                          ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300'
+                          : alert.severity === 'medium'
+                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300'
+                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                      }`}
+                    >
+                      {alert.severity}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+                    {alert.message}
+                  </p>
+                  <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">
+                    {alert.time}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   )
 }

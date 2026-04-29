@@ -1,7 +1,7 @@
 import { Suspense, lazy, useMemo } from 'react'
-import { DASHBOARD_SECTIONS } from '../../lib/constants'
 import EmptyState from '../ui/EmptyState'
 import LoadingState from '../ui/LoadingState'
+import { getFilteredSections } from '../../lib/search/dashboardSections'
 
 const SummaryCardsSection = lazy(() =>
   import('../../features/summary/components/SummaryCardsSection')
@@ -19,37 +19,11 @@ const PortfolioOverview = lazy(() =>
   import('../../features/portfolio/components/PortfolioOverview')
 )
 
-const NAV_TO_SECTION_IDS = {
-  overview: null,
-  transactions: ['transactions'],
-  insights: ['insights'],
-  budgets: ['budgets'],
-  portfolio: ['portfolio'],
-}
-
 function MainContent({ activeNavId, searchQuery, isSearchPending }) {
-  const visibleSections = useMemo(() => {
-    const scopedSectionIds = NAV_TO_SECTION_IDS[activeNavId] ?? []
-    const normalizedQuery = searchQuery.trim().toLowerCase()
-
-    const navScopedSections =
-      scopedSectionIds === null
-        ? DASHBOARD_SECTIONS
-        : DASHBOARD_SECTIONS.filter((section) => scopedSectionIds.includes(section.id))
-
-    if (!normalizedQuery) {
-      return navScopedSections
-    }
-
-    return navScopedSections.filter((section) => {
-      const keywords = Array.isArray(section.keywords)
-        ? section.keywords.join(' ')
-        : ''
-      const haystack =
-        `${section.id} ${section.title} ${section.description} ${keywords}`.toLowerCase()
-      return haystack.includes(normalizedQuery)
-    })
-  }, [activeNavId, searchQuery])
+  const visibleSections = useMemo(
+    () => getFilteredSections(activeNavId, searchQuery),
+    [activeNavId, searchQuery]
+  )
 
   if (isSearchPending) {
     return (
@@ -130,8 +104,8 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
                   <TransactionsSection />
                 ) : (
                   <EmptyState
-                    title={`${section.title} content pending`}
-                    description="This section is intentionally scaffolded and will be implemented in upcoming phases."
+                    title={`${section.title} unavailable`}
+                    description="This section could not be rendered right now. Please try again."
                   />
                 )}
               </Suspense>
