@@ -24,6 +24,16 @@ function AppShell() {
     return `Results for "${debouncedSearchQuery}"`
   }, [debouncedSearchQuery])
 
+  const activeHeaderTab = useMemo(() => {
+    if (activeNavId === 'insights') {
+      return 'analysis'
+    }
+    if (activeNavId === 'transactions') {
+      return 'market'
+    }
+    return 'portfolio'
+  }, [activeNavId])
+
   useEffect(() => {
     trackPageView('dashboard')
   }, [trackPageView])
@@ -51,6 +61,32 @@ function AppShell() {
     setSearchQuery(nextQuery)
   }, [])
 
+  const handleHeaderTabChange = useCallback(
+    (tabId) => {
+      const tabToNav = {
+        portfolio: 'overview',
+        analysis: 'insights',
+        market: 'transactions',
+      }
+      const nextNavId = tabToNav[tabId] || 'overview'
+      setActiveNavId(nextNavId)
+      setSearchQuery('')
+      trackEvent('top_nav_click', { tab_id: tabId })
+    },
+    [setActiveNavId, trackEvent]
+  )
+
+  const handleAlertsOpen = useCallback(() => {
+    setActiveNavId('overview')
+    setSearchQuery('')
+    trackEvent('alerts_click', { source: 'header' })
+  }, [setActiveNavId, trackEvent])
+
+  const handleBrandClick = useCallback(() => {
+    setActiveNavId('overview')
+    setSearchQuery('')
+  }, [setActiveNavId])
+
   const handleThemeToggle = useCallback(() => {
     setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
   }, [setTheme])
@@ -61,7 +97,7 @@ function AppShell() {
   }, [theme])
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-[radial-gradient(1200px_700px_at_20%_-10%,#12346f33_0%,#060b18_55%)] dark:text-slate-100">
+    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-[#060b18] dark:text-slate-100">
       <a
         href="#main-content"
         className="skip-link absolute left-4 top-4 z-50 -translate-y-16 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white focus:translate-y-0 dark:bg-slate-100 dark:text-slate-900"
@@ -75,6 +111,10 @@ function AppShell() {
         subtitle={headerSubtitle}
         theme={theme}
         onThemeToggle={handleThemeToggle}
+        activeTab={activeHeaderTab}
+        onTabChange={handleHeaderTabChange}
+        onAlertsOpen={handleAlertsOpen}
+        onBrandClick={handleBrandClick}
       />
       <div className="mx-auto flex w-full max-w-[1260px] gap-3 px-3 pb-4 pt-3 sm:px-4 lg:px-5">
         <Sidebar activeNavId={activeNavId} onNavChange={handleNavChange} />

@@ -42,7 +42,11 @@ function MainContent({ activeNavId, searchQuery, isSearchPending }) {
     }
 
     return navScopedSections.filter((section) => {
-      const haystack = `${section.title} ${section.description}`.toLowerCase()
+      const keywords = Array.isArray(section.keywords)
+        ? section.keywords.join(' ')
+        : ''
+      const haystack =
+        `${section.id} ${section.title} ${section.description} ${keywords}`.toLowerCase()
       return haystack.includes(normalizedQuery)
     })
   }, [activeNavId, searchQuery])
